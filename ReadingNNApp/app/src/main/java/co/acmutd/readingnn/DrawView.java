@@ -1,7 +1,6 @@
 package co.acmutd.readingnn;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -77,7 +75,6 @@ public class DrawView extends View {
         originalBitmap = mBitmap.copy(mBitmap.getConfig(), true);
         mCanvas = new Canvas(mBitmap);
         Log.d(TAG, "Size Changed");
-//        mCanvas.drawRect(0, h / 4, w, h / 4 + w, rectPaint);
         this.w = w;
         this.h = h;
     }
@@ -96,15 +93,19 @@ public class DrawView extends View {
         }
     }
 
+    /*
+    Processes the bitmap using OpenCV following the steps in the paper associated with the EMNIST dataset:
+    https://arxiv.org/pdf/1702.05373v1.pdf
+
+    TODO: Convert >0 values in mat to 1 before the threshold (High priority).
+    TODO: Find a way to find biggest contour accounting for gaps (Low priority).
+     */
     protected String process(){
         Mat mat = new Mat(mBitmap.getWidth(), mBitmap.getHeight(), CvType.CV_8UC1);
         Utils.bitmapToMat(mBitmap, mat);
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGBA2GRAY);
         Imgproc.threshold(mat, mat, 0.01, 1, Imgproc.THRESH_TOZERO);
         Imgproc.GaussianBlur(mat, mat, new Size(0, 0), 1);
-//        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGBA);
-//        Utils.matToBitmap(mat, mBitmap);
-//        float debugging[] = matToArray(mat);
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Imgproc.findContours(mat, contours, new Mat(mBitmap.getWidth(), mBitmap.getHeight(), CvType.CV_8UC1), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         if(contours.size() > 0){
@@ -117,11 +118,12 @@ public class DrawView extends View {
             Mat submat = mat.submat(new Rect((int)(center.x) - squareWidth / 2, (int)center.y - squareWidth / 2, squareWidth, squareWidth));
             Imgproc.resize(submat, submat, DrawView.inputSize);
             float input[] = matToArray(submat);
-            //Feed mat to neural network
 
+            //Feed mat to neural network
             inferenceInterface.feed("zero_padding2d_1_input", input, 1, 28, 28, 1);
             inferenceInterface.run(outputName);
             inferenceInterface.fetch("output_node0", output);
+
             float max = -1;
             int maxIndex = -1;
             for(int i = 0; i < output.length; i++){
@@ -139,6 +141,9 @@ public class DrawView extends View {
         return mBitmap;
     }
 
+    /*
+    Processes the output to the mapping that is provided with the dataset.
+     */
     private String mapOutputToChar(int input){
         if(input >= 0 && input <= 9){
             return Integer.toString(input);
@@ -172,6 +177,12 @@ public class DrawView extends View {
         }
     }
 
+    /*
+    Converts the Mat to a 1D array. Why 1D when the neural network accepts 2D?
+    TensorflowInferenceInterface converts it in the backend for us
+
+    TODO: I am converting to the "gray" values in the mat to 0 here. This should be done in the initial mat. (High priority)
+     */
     private float[] matToArray(Mat mat){
         float[] arr = new float[28 * 28];
         for(int i = 0; i < 28; i++){
@@ -184,6 +195,7 @@ public class DrawView extends View {
         }
         return arr;
     }
+
     private float mX, mY;
     private static final float TOUCH_TOLERANCE = 4;
 
