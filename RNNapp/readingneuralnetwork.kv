@@ -1,0 +1,45 @@
+#:kivy 1.10.1
+
+<Dot>:
+    size: 10, 10
+    canvas:
+        Color:
+            rgba: 1, 0, 1, 1
+        Ellipse:
+            pos: self.pos
+            size: self.size
+
+<FullImage>:
+    size: self.size
+    canvas:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            source: 'blank.png'
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 1, 1, 1, 1
+
+<MainWidget>:
+    img: image
+    canvas:
+        Color:
+            rgba: .2039, .2118, .2157, 1
+        Rectangle:
+            size: root.size
+            pos: root.pos
+    FullImage:
+        id: image
+        size: 450, 450
+        center_x: root.center_x
+        center_y: root.center_y + 50
+    Button:
+        text: 'Clear'
+        on_press: root.clear_screen()
+    Label:
+        color: 1, 1, 1, 1
+        font_size: 70
+        center_x: root.center_x
+        center_y: 50
+        text: root.prediction
