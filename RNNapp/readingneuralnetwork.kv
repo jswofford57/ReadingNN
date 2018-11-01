@@ -23,6 +23,7 @@
 
 <MainWidget>:
     img: image
+    classification: classification
     canvas:
         Color:
             rgba: .2039, .2118, .2157, 1
@@ -37,9 +38,31 @@
     Button:
         text: 'Clear'
         on_press: root.clear_screen()
+    Button:
+        text: 'Save'
+        size: 150, 50
+        center_x: 87
+        center_y: root.center_y + 20
+        font_size: 32
+        on_press: root.save_img()
+    TextInput:
+        id: classification
+        color: 1, 1, 1, 1
+        size: 34, 50
+        center_x: 87
+        center_y: root.center_y + 80
+        font_size: 32
+        on_text:
+            self.text = self.text and self.text[0] or ''
     Label:
         color: 1, 1, 1, 1
-        font_size: 70
+        font_size: 60
         center_x: root.center_x
-        center_y: 50
+        center_y: 80
         text: root.prediction
+    Label:
+        color: 1, 1, 1, 1
+        font_size: 40
+        center_x: root.center_x
+        center_y: 25
+        text: root.second_best_prediction

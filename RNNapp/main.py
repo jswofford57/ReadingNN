@@ -19,6 +19,16 @@ import matplotlib.pyplot as plt
 classes = [str(e) for e in range(0, 10)]
 
 
+def second_best(arr):
+    largest = 0
+    second_largest = 0
+    for x in range(0, arr[0].size):
+        if arr[0][x] > arr[0][largest]:
+            second_largest = largest
+            largest = x
+    return second_largest
+
+
 def load_image(infilename):
     img = IMG.open(infilename)
     img.load()
@@ -63,6 +73,8 @@ class MainWidget(Widget):
     img = ObjectProperty(None)
     model = None
     prediction = StringProperty('')
+    second_best_prediction = StringProperty('')
+    classification = ObjectProperty(None)
 
     def setup_model(self):
         #self.model = load_model('model.h5')
@@ -72,13 +84,16 @@ class MainWidget(Widget):
 
     def predict_img(self):
         whole_img = load_image('drawnonimage.png')
-        fig, axes = plt.subplots(nrows=1, ncols=1)
-        axes.imshow(whole_img, cmap='gray')
-        plt.show()
+        #fig, axes = plt.subplots(nrows=1, ncols=1)
+        #axes.imshow(whole_img, cmap='gray')
+        #plt.show()
         alpha_img = whole_img[:, :, :1]
         alpha_img = alpha_img.reshape(1, 28, 28, 1) / 255
         prediction_class = (self.model.predict_classes(alpha_img, batch_size=128))[0]
+        second_best_prediction_class = second_best(self.model.predict_proba(alpha_img, batch_size=128))
+        self.classification.text += classes[prediction_class]
         self.prediction = classes[prediction_class] + " - " + "{0:.2f}".format((self.model.predict_proba(alpha_img, batch_size=128))[0][prediction_class] * 100) + "%"
+        self.second_best_prediction = classes[second_best_prediction_class] + " - " + "{0:.2f}".format((self.model.predict_proba(alpha_img, batch_size=128))[0][second_best_prediction_class] * 100) + "%"
 
     def clear_screen(self):
         self.remove_widget(self.img)
@@ -87,6 +102,21 @@ class MainWidget(Widget):
         self.img.center_x = self.center_x
         self.img.center_y = self.center_y + 50
         self.add_widget(self.img)
+
+    def save_img(self):
+        whole_img = load_image('drawnonimage.png')
+        alpha_img = whole_img[:, :, :1]
+        alpha_img = alpha_img.reshape(28*28)
+        classification = classes.index(self.classification.text)
+        images = np.array([np.loadtxt('classified_images.txt')])
+        images = np.append(images, alpha_img)
+        images = images.reshape(int(images.shape[0]/784), 784)
+        classifications = np.array([np.loadtxt('classifications.txt')])
+        #print(classifications.shape)
+        classifications = np.append(classifications, np.array([classification]))
+        classifications = classifications.reshape(classifications.shape[0], 1)
+        np.savetxt('classified_images.txt', images, fmt='%1i')
+        np.savetxt('classifications.txt', classifications, fmt='%1i')
 
 
 class ReadingNeuralNetworkApp(App):
