@@ -1,6 +1,8 @@
 package co.acmutd.readingnn;
 
+import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawView drawView;
     private TextView result;
     private RelativeLayout parent;
+    private FloatingActionButton cameraButton;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -31,6 +34,13 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view){
                             result.setText(drawView.process());
+                        }
+                    });
+                    cameraButton.setOnClickListener(new Button.OnClickListener(){
+                        @Override
+                        public void onClick(View view){
+                            Intent myIntent = new Intent(MainActivity.this, CameraActivity.class);
+                            MainActivity.this.startActivity(myIntent);
                         }
                     });
                     Log.i(TAG, "Set analyze listener");
@@ -53,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         result = findViewById(R.id.result);
         drawView = new DrawView(this);
         parent.addView(drawView);
+        cameraButton = findViewById(R.id.cameraButton);
         clearButton.setOnClickListener(new Button.OnClickListener(){
 
             @Override

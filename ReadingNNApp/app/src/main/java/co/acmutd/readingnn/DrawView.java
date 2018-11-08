@@ -36,7 +36,7 @@ public class DrawView extends View {
     private Paint   rectPaint;
     private Bitmap originalBitmap;
     private static String TAG = "ReadingNN";
-    private static Size inputSize = new Size(28, 28);
+    public static Size inputSize = new Size(28, 28);
     private TensorFlowInferenceInterface inferenceInterface;
     private float output[] = new float[47];
     private String outputName[] = new String[]{"output_node0"};
@@ -144,7 +144,7 @@ public class DrawView extends View {
     /*
     Processes the output to the mapping that is provided with the dataset.
      */
-    private String mapOutputToChar(int input){
+    public static String mapOutputToChar(int input){
         if(input >= 0 && input <= 9){
             return Integer.toString(input);
         }
@@ -183,7 +183,7 @@ public class DrawView extends View {
 
     TODO: I am converting to the "gray" values in the mat to 0 here. This should be done in the initial mat. (High priority)
      */
-    private float[] matToArray(Mat mat){
+    public static float[] matToArray(Mat mat){
         float[] arr = new float[28 * 28];
         for(int i = 0; i < 28; i++){
             for(int j = 0; j < 28; j++){
