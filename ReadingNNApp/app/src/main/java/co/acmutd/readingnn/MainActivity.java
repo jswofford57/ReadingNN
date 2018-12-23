@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
                     analyzeButton.setOnClickListener(new Button.OnClickListener(){
                         @Override
                         public void onClick(View view){
-                            result.setText(drawView.process());
+                            result.setText("Letter: " + drawView.process());
                         }
                     });
                     cameraButton.setOnClickListener(new Button.OnClickListener(){
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         analyzeButton = findViewById(R.id.analyze);
         parent = (RelativeLayout) findViewById(R.id.drawContainer);
         result = findViewById(R.id.result);
+        result.setText("Letter: N/A");
         drawView = new DrawView(this);
         parent.addView(drawView);
         cameraButton = findViewById(R.id.cameraButton);
