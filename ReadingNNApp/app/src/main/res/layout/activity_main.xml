@@ -24,16 +24,6 @@
         android:layout_centerHorizontal="true"
         android:text="ANALYZE" />
 
-    <TextView
-        android:id="@+id/result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/analyze"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/analyze"
-        android:layout_marginStart="18dp"
-        android:text="TextView" />
-
     <RelativeLayout
         android:id="@+id/drawContainer"
         android:layout_width="match_parent"
@@ -49,6 +39,18 @@
             android:layout_marginEnd="38dp"
             android:clickable="true"
             opencv:srcCompat="@android:drawable/ic_menu_camera" />
+
+        <TextView
+            android:id="@+id/result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="25dp"
+            android:text="TextView"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"
+            tools:text="Letter: N/A" />
     </RelativeLayout>
 
 </RelativeLayout>
